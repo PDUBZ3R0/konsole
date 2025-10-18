@@ -1,6 +1,6 @@
 
 
-import { existsSync mkdirSync appendFileSync } from "node:fs"
+import { existsSync, mkdirSync, appendFileSync } from "node:fs"
 import { join, resolve as locate } from "node:path"
 
 let verbose = (function isverbose() {                        

@@ -18,10 +18,14 @@ function colorFactory(color, bold) {
         } else  {
             let c = coloris[color];
             if (!c) c = chalk(color);
-            if (c) return c;
+            if (c) {
+                return c;
+            } else {
+                return function(t){ return t }
+            }
         }
     } 
-    return t => { return t }
+    return function(t){ return t }
 }
 
 let _r_once = false;
