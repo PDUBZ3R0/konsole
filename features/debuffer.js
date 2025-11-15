@@ -9,7 +9,7 @@ let verbose = (function isverbose() {
 
 export function debuffer (logsdir, opts={ console:true, exceptions:true, rejections:true }) {
 
-	let pathname = resolve(logsdir);
+	let pathname = locate(logsdir);
 	if (!existsSync(pathname)) mkdirSync(pathname, { recursive: true });
 
 	function _lf(l="debug") { 
