@@ -1,7 +1,7 @@
 
 
 import { existsSync, mkdirSync, appendFileSync } from "node:fs"
-import { join, resolve as locate } from "node:path"
+import { join, resolve as locator } from "node:path"
 
 let verbose = (function isverbose() {                        
     for (const argv of process.argv){ if (argv==="--verbose") return true; } return false;
@@ -9,7 +9,7 @@ let verbose = (function isverbose() {
 
 export function debuffer (logsdir, opts={ console:true, exceptions:true, rejections:true }) {
 
-	let pathname = locate(logsdir);
+	let pathname = locator(logsdir);
 	if (!existsSync(pathname)) mkdirSync(pathname, { recursive: true });
 
 	function _lf(l="debug") { 
