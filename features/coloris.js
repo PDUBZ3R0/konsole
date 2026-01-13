@@ -1,5 +1,9 @@
 
-import chalk from "chalk";
+import { default as _chalk_ } from "chalk";
+
+export { default as gradient } from "gradient-string";
+
+export const chalk = _chalk_;
 
 export const coloris = (function(){
 	const colors = {

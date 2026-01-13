@@ -1,10 +1,17 @@
 {
   "name": "konsole",
-  "version": "1.2.0",
-  "main": "./index.js",
+  "version": "2.1.0",
+  "exports": {
+    ".": "./features/konsole.js",
+    "./stopwatch": "./features/stopwatch.js",
+    "./coloris": "./features/coloris.js",
+    "./datadir": "./features/datadir.js",
+    "./debuffer": "./features/debuffer.js"
+  },
   "type": "module",
   "license": "ISC",
   "scripts": {
+    "preinstall": "node @banner.js",
     "clean": "rm -rf node_modules"
   },
   "dependencies": {

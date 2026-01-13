@@ -35,7 +35,7 @@ const ANSI = "\u001B[1F\u001B[G\u001B[2K";
 
 function factory(prefix){
     
-    function komponent(name, color, brackets) {
+    function komponent(name, { color, brackets }) {
         brackets = brackets || "[]";
         let _m_n = name;
         let _m_c = colorFactory(color);
@@ -51,7 +51,7 @@ function factory(prefix){
         $internal.apply(null, args);
     }
 
-    function logger(...args) {
+    function write(...args) {
         _r_once = false;
         _r_mod = prefix;
         $internal.apply(null, [prefix].concat(args));
@@ -68,7 +68,7 @@ function factory(prefix){
     }
 
     return {
-        komponent, log: logger, logger, replace, raw
+        komponent, log: write, write, replace, raw
     }
 }
 

@@ -53,29 +53,33 @@ function _datadir_(name, opt, ...extra) {
 	return dir;
 }
 
-
-export const datadir = {
-	datadir(name, ...subdirs) {
-		return _datadir_(name, null, ...subdirs)
-	},
 	
-	local(name, ...subdirs) {
-		return _datadir_(name, "local", ...subdirs)
-	},
-
-	share(name, ...subdirs) {
-		return _datadir_(name, "share", ...subdirs)
-	},
-
-	home(name, ...subdirs) {
-		return _datadir_(name, "home", ...subdirs)
-	},
-
-	cache(name, ...subdirs) {
-		return _datadir_(name, "cache", ...subdirs)
-	},
-
-	config(name, ...subdirs) {
-		return _datadir_(name, "config", ...subdirs)
-	}
+export function	local(name, ...subdirs) {
+	return _datadir_(name, "local", ...subdirs)
 }
+
+export function	share(name, ...subdirs) {
+	return _datadir_(name, "share", ...subdirs)
+}
+
+export function	home(name, ...subdirs) {
+	return _datadir_(name, "home", ...subdirs)
+}
+
+export function	cache(name, ...subdirs) {
+	return _datadir_(name, "cache", ...subdirs)
+}
+
+export function	config(name, ...subdirs) {
+	return _datadir_(name, "config", ...subdirs)
+}
+
+export const datadir = function(name, ...subdirs) {
+	return _datadir_(name, null, ...subdirs)
+}
+
+datadir.local = local
+datadir.share = share
+datadir.home = home
+datadir.cache = cache
+datadir.config = config
