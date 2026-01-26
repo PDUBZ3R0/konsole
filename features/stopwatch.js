@@ -1,4 +1,6 @@
 
+import { coloris } from './coloris';
+
 export class StopWatch {
     constructor() {
         this.start = new Date().getTime();
@@ -27,6 +29,12 @@ export class StopWatch {
             rate
         };
         return out;
+    }
+
+    customize({ minutes='cyan', seconds='fuchsia', brackets='white', layout='[]' }){
+        return function(min, sec) {
+            return `${coloris[brackets](layout.substr(0, layout.length/2))}${coloris[minutes](min)}:${coloris[seconds](sec)}${coloris[brackets](layout.substr(0, layout.length/2))}
+        }
     }
 }
 

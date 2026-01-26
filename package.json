@@ -1,12 +1,12 @@
 {
-  "name": "konsole",
-  "version": "2.1.0",
+  "name": "debuffer",
+  "version": "1.0.0",
   "exports": {
-    ".": "./features/konsole.js",
+    "./": "./features/debuffer.js",
     "./stopwatch": "./features/stopwatch.js",
     "./coloris": "./features/coloris.js",
     "./datadir": "./features/datadir.js",
-    "./debuffer": "./features/debuffer.js"
+    "./konsole": "./features/konsole.js"
   },
   "type": "module",
   "license": "ISC",

@@ -1,7 +1,7 @@
 
-
 import { existsSync, mkdirSync, appendFileSync } from "node:fs"
 import { join, resolve as locator } from "node:path"
+import { default as JSON5 } from 'json5'
 import { coloris } from './coloris.js'
 import { komponent } from './konsole.js'
 
@@ -14,15 +14,26 @@ export const Levels = {
 	OFF: 0
 }
 
-const deflevels = { 
-	$default: Levels.INFO, 
-	$intercepts: Levels.INFO,
-	$console: Levels.INFO, 
-	console: Levels.DEBUG 
+const START_LEVELS = { 
+	$default: Levels.INFO,
+	$console: Levels.INFO 
+};
+
+export function debuffer (opts={ configfile, logsdir, onerror, onreject, levels=START_LEVELS }) {
+
+	function loadfile(conf){
+		if (!conf) {
+			let dirname = path.join(import.meta.dirname, "debuffer.json");
+			if (fs.existsSync(dirname)) enturn({ configfile: dirname })
+			dirname += "5";
+			if (fs.existsSync(dirname)) enturn({ configfile: dirname })
+		} else {
+			enturn({ configfile: dirname, logsdir, onerror, onreject, levels=START_LEVELS })
+		}
+	}
 }
 
-export function debuffer ({ logsdir, logtoconsole=true, onerror, onreject, levels=deflevels}) {
-
+export function enturn ({ configfile, logsdir, onerror, onreject, levels=START_LEVELS }) {
 	let pathname = (()=>{
 		if (logsdir) {
 			let pn = locator(logsdir);
@@ -48,13 +59,9 @@ export function debuffer ({ logsdir, logtoconsole=true, onerror, onreject, level
 	function log2all(msg, info) {
 		let lvl = { 
 			message: Levels[info.level.toUpperCase()],
-			setting: (typeof logsdir !== 'undefined') ? (levels[info.logger] || levels.$default) : Levels.OFF,
-			console: (logtoconsole) ? (info.logger === "console" ? levels.$intercepts : levels.$console) : Levels.OFF,
+			setting: (typeof logsdir !== 'undefined') ? (info.logger === "console" ? levels.$console) : levels[info.logger] || levels.$default) : Levels.OFF,
 			file() {
 				return this.setting >= this.message
-			},
-			stdout() {
-				return this.console >= this.message
 			}
 		};
 
@@ -104,28 +111,11 @@ export function debuffer ({ logsdir, logtoconsole=true, onerror, onreject, level
 		if (lvl.file()) {
 			appendFileSync(loggerfilename(info.logger), `${formatme(info, false, (lvl.message === Levels.DEBUG ? debugmode : infomode)).join(" ")}\n`, "utf-8");
 		}
-		if (lvl.stdout()) {
-			$internal.apply(console, formatme(info, true, lvl.message === Levels.DEBUG ? debugmode : infomode))
-		}
 	}
 
-	const colors = {
-		trace: "lavender",
-		debug: "honeydew",
-		info: "powderblue",
-		warn: "lemonchiffon",
-		error: "peachpuff",
-	}
 
 	function formatme(info, color, args) {
-		let l, f, n = "", c = (l = (f = m => m));
-		if (color) {
-			c = coloris[colors[info.level]];
-			n = (info.logger === "fatal" ? coloris.red : coloris.slategrey)(info.logger) + "/";
-			l = coloris.powderblue
-			f = coloris.skyblue
-		}
-        const prefix = `${formatter.format(new Date())} [${c(info.level.toUpperCase())}] (${n}${f(info.file)}${info.ext}@${l(info.line)})`
+        const prefix = `${formatter.format(new Date())} [${info.level.toUpperCase()}] (${info.logger}/${info.file}${info.ext}@${info.line})`
         return [ prefix, ...args ]
 	}
 
@@ -179,22 +169,24 @@ export function debuffer ({ logsdir, logtoconsole=true, onerror, onreject, level
 
 		konsole({ name, color, brackets, defaultLevel }) {
 			const konsole = komponent(name, { color, brackets });
+			const logger = API.logger(name, defaultLevel)
+
 			return { 
 				konsole: {
 					write(...msg) {
-						_levels.log.apply(_levels, msg);
+						logger.info.apply(_levels, msg);
 						konsole.log.apply(konsole, msg);
 					},
 					replace(...msg) {
-						_levels.log.apply(_levels, msg);
+						logger.debug.apply(_levels, msg);
 						konsole.replace.apply(konsole, msg);
 					},
 					raw(...msg) {
-						_levels.log.apply(_levels, msg);
+						logger.info.apply(_levels, msg);
 						konsole.raw.apply(konsole, msg);
 					}
-				}, 
-				logger: API.logger(name, defaultLevel)
+				},
+				logger
 			}
 		}
 	};
@@ -224,14 +216,14 @@ export function debuffer ({ logsdir, logtoconsole=true, onerror, onreject, level
 
 		const intercepts = API.logger("console");
 
-        function solecons(object,method,label,level){
+        function solecons(object,method,label){
             let syscall = object[method];
             object[method] = function monkeylogger (...args) {
             	if (typeof level === 'undefined') {
 		            let lvlstr = label || method;
 		            intercepts[lvlstr]( ...args);
 		        } else {
-		        	log2all("console", args, level, label);
+		        	log2all("console", args, label);
 		        }
 	        };
             return solecons;

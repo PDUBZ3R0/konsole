@@ -1,9 +1,9 @@
 
-import { default as _chalk_ } from "chalk";
+import { default as chalk } from "chalk";
 
-export { default as gradient } from "gradient-string";
+import { default as grads } from "gradient-string";
 
-export const chalk = _chalk_;
+export const gradient = grads;
 
 export const coloris = (function(){
 	const colors = {
@@ -157,9 +157,39 @@ export const coloris = (function(){
 		"yellowgreen": "#9ACD32"
 	};
 
-	let out = {};
-	for (let colorKey in colors) {
-		out[colorKey] = chalk.hex(colors[colorKey]);
+	function out(color){
+		let ansi = false;
+		if (typeof color === 'string') {
+			if (color.toUpperCase().match(/^#([A-F0-9]{3})([A-F0-9]{3})?$/)) {
+				return chalk.hex(color);
+			} else if (color.toLowerCase().match(/^[a-z]+$/) && colors.hasOwnProperty(color.toLowerCase())){
+				return chalk.hex(colors[color]);
+			} else if (chalk.hasOwnProperty(color)){
+				return chalk[color];
+			} else if (color.match(/^\d+$/) && parseInt(color) <= 256){
+				color = parseInt(color);
+				ansi = true;
+			}
+		} else if (typeof color === 'object' && color instanceof Array && color.length === 3) {
+			return chalk.rgb.apply(chalk, color);
+		} else if (typeof color === 'number' && color <= 256) {
+			ansi = true;
+		}
+
+		if (ansi) return chalk.ansi256(color);
 	}
+
+	for (let colorKey in colors) {
+		out[colorKey] = out(colors[colorKey]);
+	}
+
+	out.load = items=> {
+		for (key in items) {
+			out[key] = out(items[key]);
+		}
+	};
+
+	out.gradient = gradient;
+
 	return out;
 })()
