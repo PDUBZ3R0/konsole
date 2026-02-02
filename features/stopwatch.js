@@ -21,6 +21,7 @@ export class StopWatch {
         minutes = (minutes - (hours*60)); 
         seconds = `${seconds<10?"0":""}${seconds}`
         minutes = `${minutes<10?"0":""}${minutes}`
+        hours = `${hours<10?"0":""}${hours}`
         
         let out = {
             hours,
@@ -31,9 +32,10 @@ export class StopWatch {
         return out;
     }
 
-    customize({ minutes='cyan', seconds='fuchsia', brackets='white', layout='[]' }){
-        return function(min, sec) {
-            return `${coloris[brackets](layout.substr(0, layout.length/2))}${coloris[minutes](min)}:${coloris[seconds](sec)}${coloris[brackets](layout.substr(0, layout.length/2))}
+    customize({ hours='yellow', minutes='cyan', seconds='fuchsia', brackets='white', layout='[]' }){
+        return function(){
+            let timings = this.display();
+            return `${coloris[brackets](layout.substr(0, layout.length/2))}${coloris[hours](timings.hours)}:${coloris[minutes](timings.minutes)}:${coloris[seconds](timings.seconds)}${coloris[brackets](layout.substr(0, layout.length/2))}
         }
     }
 }
